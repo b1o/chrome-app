@@ -3,8 +3,10 @@ chrome.browserAction.setIcon({
 });
 
 chrome.runtime.onMessageExternal.addListener(function(message) {
+    console.log(message)
   if(message == 'start') {
     captureDesktop()
+    console.log('started')
   } else {
     stopVODRecording()
   }
@@ -21,6 +23,8 @@ chrome.contextMenus.createExternal = function(message) {
         chrome.contextMenus.create(message);
     } catch (e) {}
 };
+
+//http://172.31.28.245:4200/#/record/16734743-aab4-41ab-88f6-dac34bdab6cb/a
 
 function captureDesktop() {
     if (isRecordingVOD) {
