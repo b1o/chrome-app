@@ -2,26 +2,26 @@ chrome.browserAction.setIcon({
     path: 'images/main-icon.png'
 });
 
-chrome.runtime.onMessageExternal.addListener(function(message) {
+chrome.runtime.onMessageExternal.addListener(function (message) {
     console.log(message)
-  if(message == 'start') {
-    captureDesktop()
-    console.log('started')
-  } else {
-    stopVODRecording()
-  }
+    if (message == 'start') {
+        captureDesktop()
+        console.log('started')
+    } else {
+        stopVODRecording()
+    }
 
 })
 
-chrome.browserAction.onClicked.addListener(function() {
+chrome.browserAction.onClicked.addListener(function () {
     window.postMessage('started', '*')
     console.log("start")
 });
 
-chrome.contextMenus.createExternal = function(message) {
+chrome.contextMenus.createExternal = function (message) {
     try {
         chrome.contextMenus.create(message);
-    } catch (e) {}
+    } catch (e) { }
 };
 
 //http://172.31.28.245:4200/#/record/16734743-aab4-41ab-88f6-dac34bdab6cb/a
@@ -93,7 +93,7 @@ function onAccessApproved(chromeMediaSourceId) {
         videoMaxFrameRates = parseInt(videoMaxFrameRates);
 
         // 30 fps seems max-limit in Chrome?
-        if (videoMaxFrameRates /* && videoMaxFrameRates <= 30 */ ) {
+        if (videoMaxFrameRates /* && videoMaxFrameRates <= 30 */) {
             constraints.video.maxFrameRate = videoMaxFrameRates;
         }
     }
@@ -119,10 +119,10 @@ function onAccessApproved(chromeMediaSourceId) {
 function gotStream(stream) {
     var options = {
         type: 'video',
-        bitsPerSecond: 256*8*1024,  
+        bitsPerSecond: 256 * 8 * 1024,
         disableLogs: false,
-        mimeType: 'video/webm'
-       // recorderType: MediaStreamRecorder // StereoAudioRecorder
+        mimeType: 'video/mp4'
+        // recorderType: MediaStreamRecorder // StereoAudioRecorder
     };
 
     if (getChromeVersion() >= 52) {
@@ -157,15 +157,15 @@ function gotStream(stream) {
 
     if (audioStream && audioStream.getAudioTracks && audioStream.getAudioTracks().length) {
         audioPlayer = document.createElement('audio');
-		audioPlayer.muted = true;
-		audioPlayer.volume = 0;
+        audioPlayer.muted = true;
+        audioPlayer.volume = 0;
         audioPlayer.src = URL.createObjectURL(audioStream);
 
         audioPlayer.play();
-		
-		var singleAudioStream = getMixedAudioStream([stream, audioStream]);
-		singleAudioStream.addTrack(stream.getVideoTracks()[0]);
-		stream = singleAudioStream;
+
+        var singleAudioStream = getMixedAudioStream([stream, audioStream]);
+        singleAudioStream.addTrack(stream.getVideoTracks()[0]);
+        stream = singleAudioStream;
     }
 
     recorder = RecordRTC(stream, options);
@@ -182,15 +182,15 @@ function gotStream(stream) {
     isRecording = true;
     onRecording();
 
-    recorder.stream.onended = function() {
+    recorder.stream.onended = function () {
         if (recorder && recorder.stream) {
-            recorder.stream.onended = function() {};
+            recorder.stream.onended = function () { };
         }
 
         stopScreenRecording();
     };
 
-    recorder.stream.getVideoTracks()[0].onended = function() {
+    recorder.stream.getVideoTracks()[0].onended = function () {
         if (recorder && recorder.stream && recorder.stream.onended) {
             recorder.stream.onended();
         }
@@ -210,7 +210,7 @@ function getMixedAudioStream(arrayOfMediaStreams) {
     gainNode.gain.value = 0; // don't hear self
 
     var audioTracksLength = 0;
-    arrayOfMediaStreams.forEach(function(stream) {
+    arrayOfMediaStreams.forEach(function (stream) {
         if (!stream.getAudioTracks().length) {
             return;
         }
@@ -227,7 +227,7 @@ function getMixedAudioStream(arrayOfMediaStreams) {
     }
 
     mediaStremDestination = context.createMediaStreamDestination();
-    audioSources.forEach(function(audioSource) {
+    audioSources.forEach(function (audioSource) {
         audioSource.connect(mediaStremDestination);
     });
     return mediaStremDestination.stream;
@@ -244,37 +244,17 @@ var peer;
 
 function stopScreenRecording() {
     isRecording = false;
-
-    recorder.stopRecording(function() {
-        var file = new File([recorder.getBlob()], 'RecordRTC-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm', {
-            type: 'video/webm'
+    var file;
+    recorder.stopRecording(function () {
+        file = new File([recorder.getBlob()], 'RecordRTC-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
+            type: 'video/mp4'
         });
-	
-	var data = new FormData();
-    	data.append('file', file)
-	    
-    	$.ajax({
-		//change this with uploading url
-            url: 'https://content.daskal.eu/dany/content/wb', 
-		method: 'POST',
-		data: data,
-		cache: false,
-		contentType: false,
-		processData: false,
-	    success: function() {
-		window.postMessage('success', '*')
-		console.log('sucess')
-	    },
-	    error: function(error) {
-		console.log(error)
-	    }
-        })
-	    
+
         //invokeSaveAsDialog(file, file.name);
 
-        setTimeout(function() {
-            setDefaults();
-            chrome.runtime.reload();
+        setTimeout(function () {
+            //setDefaults();
+            // chrome.runtime.reload();
         }, 1000);
 
         askToStopExternalStreams();
@@ -282,7 +262,7 @@ function stopScreenRecording() {
         try {
             peer.close();
             peer = null;
-        } catch (e) {}
+        } catch (e) { }
 
         try {
             audioPlayer.src = null;
@@ -290,8 +270,29 @@ function stopScreenRecording() {
             mediaStremSource.disconnect();
             context.disconnect();
             context = null;
-        } catch (e) {}
+        } catch (e) { }
+
+        var data = new FormData();
+        data.append('file', file)
+
+        $.ajax({
+            //change this with uploading url
+            url: 'https://content.daskal.eu/dany/content/wb',
+            method: 'POST',
+            data: data,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function () {
+                window.postMessage('success', '*')
+                console.log('sucess')
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        })
     });
+
 
     if (timer) {
         clearTimeout(timer);
@@ -421,7 +422,7 @@ var videoCodec = 'Default';
 var videoMaxFrameRates = 60;
 
 function getUserConfigs() {
-    chrome.storage.sync.get(null, function(items) {
+    chrome.storage.sync.get(null, function (items) {
         if (items['audioBitsPerSecond'] && items['audioBitsPerSecond'].toString().length) {
             audioBitsPerSecond = parseInt(items['audioBitsPerSecond']);
         }
@@ -459,7 +460,7 @@ function getUserConfigs() {
 
             chrome.storage.sync.set({
                 resolutions: _resolutions
-            }, function() {});
+            }, function () { });
         }
 
         if (_resolutions === '4K UHD (3840x2160)') {
@@ -634,7 +635,7 @@ function getUserConfigs() {
             if (!runtimePort || runtimePort.sender.url.indexOf('https:') == -1) {
                 chrome.tabs.create({
                     url: 'https://webrtcweb.com'
-                }, function(tab) {
+                }, function (tab) {
                     askContentScriptToSendMicrophone(tab.id);
                 });
                 return;
@@ -680,13 +681,13 @@ function getUserMediaError() {
 }
 
 // Check whether new version is installed
-chrome.runtime.onInstalled.addListener(function(details) {
+chrome.runtime.onInstalled.addListener(function (details) {
     if (details.reason.search(/install/g) === -1) return;
     chrome.runtime.openOptionsPage();
 });
 
 // Check for updates
-chrome.runtime.onUpdateAvailable.addListener(function(details) {
+chrome.runtime.onUpdateAvailable.addListener(function (details) {
     // alert('RecordRTC chrome-extension has new updates. Please update the extension.');
 });
 
@@ -745,12 +746,12 @@ chrome.tabs.onCreated.addListener(enableDisableContextMenuItems);
 
 var runtimePort;
 
-chrome.runtime.onConnect.addListener(function(port) {
+chrome.runtime.onConnect.addListener(function (port) {
     runtimePort = port;
 
     enableDisableContextMenuItems();
 
-    runtimePort.onMessage.addListener(function(message) {
+    runtimePort.onMessage.addListener(function (message) {
         if (!message || !message.messageFromContentScript1234) {
             return;
         }
@@ -800,7 +801,7 @@ chrome.runtime.onConnect.addListener(function(port) {
     });
 
     if (pending.length) {
-        pending.forEach(function(task) {
+        pending.forEach(function (task) {
             sendMessageToContentScript(task);
         });
         pending = [];
@@ -812,7 +813,7 @@ var pending = [];
 function askContentScriptToSendMicrophone(tabId) {
     chrome.tabs.update(tabId, {
         active: true
-    }, function() {
+    }, function () {
         var message = {
             giveMeMicrophone: true,
             messageFromContentScript1234: true
@@ -825,7 +826,7 @@ function askContentScriptToSendMicrophone(tabId) {
 function createAnswer(sdp) {
     peer = new webkitRTCPeerConnection(null);
 
-    peer.onicecandidate = function(event) {
+    peer.onicecandidate = function (event) {
         if (!event || !!event.candidate) return;
 
         sendMessageToContentScript({
@@ -834,22 +835,22 @@ function createAnswer(sdp) {
         });
     };
 
-    peer.onaddstream = function(event) {
+    peer.onaddstream = function (event) {
         audioStream = event.stream;
         captureDesktop();
     };
 
     peer.setRemoteDescription(new RTCSessionDescription(sdp));
 
-    peer.createAnswer(function(sdp) {
+    peer.createAnswer(function (sdp) {
         peer.setLocalDescription(sdp);
-    }, function() {}, {
-        optional: [],
-        mandatory: {
-            OfferToReceiveAudio: true,
-            OfferToReceiveVideo: false
-        }
-    });
+    }, function () { }, {
+            optional: [],
+            mandatory: {
+                OfferToReceiveAudio: true,
+                OfferToReceiveVideo: false
+            }
+        });
 }
 
 var audioPlayer, context, mediaStremSource, mediaStremDestination;
@@ -906,7 +907,7 @@ function updateYouTubeRightClick(enabled) {
     return;
     chrome.contextMenus.update(contextMenuUID + 'youtube', {
         enabled: enabled
-    }, function() {
+    }, function () {
         //
     });
 }
@@ -924,7 +925,7 @@ var startedVODRecordedAt = (new Date).getTime();
 
 var selectedMenuID = '';
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
+chrome.contextMenus.onClicked.addListener(function (info, tab) {
     if (!info.menuItemId || info.menuItemId.indexOf(contextMenuUID) == -1) {
         return;
     }
@@ -1002,7 +1003,7 @@ function captureTabUsingTabCapture(isNoAudio) {
         }
     };
 
-    chrome.tabCapture.capture(constraints, function(stream) {
+    chrome.tabCapture.capture(constraints, function (stream) {
         gotTabCaptureStream(stream, constraints);
     });
 }
