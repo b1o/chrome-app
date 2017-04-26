@@ -12,7 +12,7 @@ chrome.runtime.onMessageExternal.addListener(function(message) {
 })
 
 chrome.browserAction.onClicked.addListener(function() {
-    window.postMessage('started')
+    window.postMessage('started', '*')
     console.log("start")
 });
 
