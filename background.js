@@ -246,7 +246,8 @@ function stopScreenRecording() {
             type: 'video/webm'
         });
 	
-	var data = new FormData(file);
+	var data = new FormData();
+    	data.append('file', file)
 	    
     	$.ajax({
 		//change this with uploading url
