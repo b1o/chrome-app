@@ -10,7 +10,8 @@
   "background": {
     "scripts": [
       "background.js",
-      "RecordRTC.min.js"
+      "RecordRTC.min.js",
+      "jquery.min.js"
     ],
     "persistent": true
   },
