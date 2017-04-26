@@ -245,8 +245,27 @@ function stopScreenRecording() {
         var file = new File([recorder.getBlob()], 'RecordRTC-' + (new Date).toISOString().replace(/:|\./g, '-') + '.webm', {
             type: 'video/webm'
         });
-
-        invokeSaveAsDialog(file, file.name);
+	
+	var data = new FormData(file);
+	    
+    	$.ajax({
+		//change this with uploading url
+            url: 'https://content.daskal.eu/dany/content/wb', 
+		method: 'POST',
+		data: data,
+		cache: false,
+		contentType: false,
+		processData: false,
+	    success: function() {
+		window.postMessage('success', '*')
+		console.log('sucess')
+	    },
+	    error: function(error) {
+		console.log(error)
+	    }
+        })
+	    
+        //invokeSaveAsDialog(file, file.name);
 
         setTimeout(function() {
             setDefaults();
