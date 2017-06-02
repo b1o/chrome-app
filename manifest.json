@@ -1,0 +1,74 @@
+{
+  "name": "Daskal server recording",
+  "short_name": "DaskalRecord",
+  "author": "Muaz Khan",
+  "version": "4.0",
+  "manifest_version": 2,
+  "minimum_chrome_version": "49",
+  "description": "Record screen, audio+screen, all-audios+tab, entire conference, and more!",
+  "homepage_url": "https://www.WebRTC-Experiment.com/RecordRTC/",
+  "background": {
+    "scripts": [
+      "background.js",
+      "RecordRTC.min.js",
+      "jquery.min.js"
+    ],
+    "persistent": true
+  },
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "content-script.js"
+    ],
+    "persistent": true
+  }],
+  "externally_connectable": {
+    "matches": ["https://wb-dev.daskal.eu/*"]
+  },
+  "browser_action": {
+    "default_icon": "images/main-icon.png",
+    "default_title": "Record Screen"
+  },
+  "icons": {
+    "16": "images/main-icon.png",
+    "22": "images/main-icon.png",
+    "32": "images/main-icon.png",
+    "48": "images/main-icon.png",
+    "128": "images/main-icon.png"
+  },
+  "permissions": [
+    "desktopCapture",
+    "storage",
+    "contextMenus",
+    "tabs",
+    "<all_urls>",
+    "tabCapture",
+    "activeTab"
+  ],
+  "web_accessible_resources": [
+    "images/main-icon.png"
+  ],
+  "options_ui": {
+    "page": "popup.html",
+    "chrome_style": false
+  },
+  "commands": {
+    "start-record": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y",
+        "linux": "Ctrl+Shift+J"
+      },
+      "description": "Toggle feature foo"
+    },
+    "_execute_browser_action": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+Y",
+        "mac": "Command+Shift+Y",
+        "chromeos": "Ctrl+Shift+U",
+        "linux": "Ctrl+Shift+J"
+      }
+    }
+  }
+}
