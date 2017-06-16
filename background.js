@@ -129,8 +129,8 @@ function gotStream(stream) {
         type: 'video',
         bitsPerSecond: 256 * 8 * 1024,
         disableLogs: false,
-        mimeType: 'video/mp4'
-        // recorderType: MediaStreamRecorder // StereoAudioRecorder
+        mimeType: 'video/mp4',
+         recorderType: MediaStreamRecorder // StereoAudioRecorder
     };
 
     if (getChromeVersion() >= 52) {
@@ -258,7 +258,7 @@ function stopScreenRecording() {
             type: 'video/mp4'
         });
 
-        //invokeSaveAsDialog(file, file.name);
+        invokeSaveAsDialog(file, file.name);
 
         setTimeout(function () {
             //setDefaults();
