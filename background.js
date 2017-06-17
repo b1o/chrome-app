@@ -254,8 +254,8 @@ function stopScreenRecording() {
     isRecording = false;
     var file;
     recorder.stopRecording(function () {
-        file = new File([recorder.getBlob()], 'RecordRTC-' + (new Date).toISOString().replace(/:|\./g, '-') + '.mp4', {
-            type: 'video/mp4'
+        file = new File([recorder.getBlob()],'orig.webm', {
+            type: 'video/webm'
         });
 
         invokeSaveAsDialog(file, file.name);
@@ -286,15 +286,11 @@ function stopScreenRecording() {
         console.log('will upload hash', contentHash)
         $.ajax({
             //change this with uploading url
-            url: 'https://wb-dev.daskal.eu/content/videoContent/upload/' + contentHash,
-            method: 'POST',
-            data: data,
-            cache: false,
-            contentType: false,
-            processData: false,
+            url: 'http://recorder.daskal.eu:8080/upload/' + contentHash,
+            method: 'GET',
             success: function () {
                 runtimePort.postMessage('success')
-                console.log('sucess')
+                console.log('success')
             },
             error: function (error) {
                 console.log(error)
